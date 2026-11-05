@@ -1,0 +1,10 @@
+name = "arch-synthetic"
+# Crate-embedded Symposium manifest for arch-synthetic.
+
+[[plugins]]
+depends-on = ["k3-core"]
+source.cargo = "k3-core"
+
+[[plugins]]
+depends-on = ["kernels-rvv"]
+source.cargo = "kernels-rvv"
