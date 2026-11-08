@@ -1,14 +1,14 @@
-//! `arch-synthetic`: Synthetic architecture recipe and deterministic token sampler.
+//! `jero-arch-synthetic`: Synthetic architecture recipe and deterministic token sampler.
 //!
 //! Implements [`ArchRecipe`] for the reference synthetic model architecture,
 //! reading `mlock`ed weight tensors, updating and reading the 16-token paged KV cache,
-//! dispatching `kernels-rvv` primitives, and performing greedy argmax sampling
+//! dispatching `jero-kernels-rvv` primitives, and performing greedy argmax sampling
 //! with lowest-token-ID tie-breaking per ADR-005, ADR-023, and ADR-024.
 
-use k3_core::{ArchRecipe, ExecutionContext, K3Error, ModelWeights, QuantType};
+use jero_core::{ArchRecipe, ExecutionContext, K3Error, ModelWeights, QuantType};
 
 #[cfg(feature = "with-kernels")]
-use kernels_rvv::{BaselineKernel, VectorKernel};
+use jero_kernels_rvv::{BaselineKernel, VectorKernel};
 
 /// Synthetic architecture recipe implementation (US-01.6.3).
 #[derive(Debug, Clone, Copy, Default)]
@@ -206,13 +206,13 @@ pub fn sample_argmax(logits: &[f32]) -> Option<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use k3_core::GgufFile;
-    use k3_core::test_helpers::create_synthetic_gguf_v3;
+    use jero_core::GgufFile;
+    use jero_core::test_helpers::create_synthetic_gguf_v3;
 
     struct DummyWeights;
 
     impl ModelWeights for DummyWeights {
-        fn tensor(&self, name: &str) -> Result<k3_core::TensorView<'_>, K3Error> {
+        fn tensor(&self, name: &str) -> Result<jero_core::TensorView<'_>, K3Error> {
             Err(K3Error::TensorBoundsError {
                 tensor_name: name.to_owned(),
                 offset: 0,
